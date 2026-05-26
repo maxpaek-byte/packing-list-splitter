@@ -341,7 +341,7 @@ async function pageToJpegBase64(page, dpi=200) {
 }
 
 /**
- * Claude Haiku Vision API 호출  (v9)
+ * Claude Haiku Vision API 호출  (v10)
  *
  * 반환값:
  *   'NO_LABEL'     — DELIVERY ADDRESS 섹션이 이 페이지에 없음 (연속 시트)
@@ -379,18 +379,22 @@ async function callClaudeVision(imgBase64, pageNum) {
                 "  If the box is ABSENT → reply exactly:  NO_LABEL\n\n" +
 
                 "STEP 2 — If the box IS present, read the company name:\n" +
-                "  The company name is the FIRST typographic line inside the box.\n" +
-                "  A 'line' is defined by where the text WRAPS in the document — NOT by punctuation.\n" +
-                "  Periods and commas inside a company name do NOT end the line.\n" +
-                "  Example: 'AT&F GLOBAL CO.,LTD. (YANG SAN' is ONE single line.\n\n" +
+                "  Read ONLY the very first line of text inside the box.\n" +
+                "  Stop at the first physical line break — do NOT read the second line or beyond.\n" +
+                "  (Address, city, country, branch name on lower lines must be ignored.)\n" +
+                "  Note: periods and commas within a company name are NOT line breaks.\n" +
+                "    Example: 'AT&F GLOBAL CO.,LTD. (YANG SAN' is ONE line — read all of it.\n\n" +
 
-                "  Transcription rules — copy EXACTLY what is printed:\n" +
-                "    • Space ( ) and underscore ( _ ) are DIFFERENT — do not substitute one for the other.\n" +
-                "      'ALPHA TECH_DONGHAE' → underscore between TECH and DONGHAE.\n" +
-                "      'ALPHA TECH DONGHAE' → space between TECH and DONGHAE.\n" +
-                "      Read the actual character; do not guess from context.\n" +
-                "    • O (letter) ≠ Q ≠ 0 (zero).  H ≠ D.  B ≠ P.  RN ≠ M.  GG ≠ G.  I ≠ J.\n" +
-                "    • Look carefully at similar names: DONGGWANG ≠ TAEKWANG.\n" +
+                "  Transcription rules — copy EXACTLY what is printed on that first line:\n" +
+                "    • Underscore ( _ ) is NOT a space — they are completely different characters.\n" +
+                "      When you see an underscore between words, you MUST write it as underscore _.\n" +
+                "      'ALPHA TECH_DONGHAE' → write with underscore (NOT 'ALPHA TECH DONGHAE').\n" +
+                "      'CHONG RO_P&P' → write with underscore (NOT 'CHONG RO P&P').\n" +
+                "      Never silently replace an underscore with a space.\n" +
+                "    • Include any space that appears before a parenthesis.\n" +
+                "      'ALPHA CO. (GUNSAN)' — the space before '(' must be included.\n" +
+                "    • O (letter) ≠ Q ≠ 0 (zero).  H ≠ D.  B ≠ P.  NJ ≠ NGJ.  RN ≠ M.  I ≠ J.\n" +
+                "    • DONGGWANG and TAEKWANG are completely different — read each letter carefully.\n" +
                 "    • Copy symbols verbatim: & ( ) _ - / , . as they appear.\n" +
                 "    • Do NOT correct spelling or typos — transcribe exactly as printed.\n" +
                 "    • Do NOT infer the name from nearby pages — read only THIS page.\n" +
