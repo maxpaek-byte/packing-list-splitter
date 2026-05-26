@@ -469,17 +469,28 @@ async function processPDF() {
       `총 ${totalPages}페이지를 Claude Vision API로 분석 중입니다…`;
 
     // ② 페이지별 처리
+    let lastCompany = null;   // CONTINUATION 판정에 사용
     for (let i = 0; i < totalPages; i++) {
       addLog(`  페이지 ${i + 1}/${totalPages} 분석 중…`, 'log-dim');
 
-      const page     = await pdfDoc.getPage(i + 1);
-      const imgB64   = await pageToJpegBase64(page, 150);
-      const company  = await callClaudeVision(imgB64, i + 1);
+      const page    = await pdfDoc.getPage(i + 1);
+      const imgB64  = await pageToJpegBase64(page, 200);   // 200 DPI — OCR 선명도 향상
+      const result  = await callClaudeVision(imgB64, i + 1);
+
+      let company;
+      if (result === 'CONTINUATION') {
+        // DELIVERY ADDRESS 없음 + "X of Y" 에서 X > 1 → 이전 페이지 회사에 합산
+        company = lastCompany || 'UNKNOWN';
+        addLog(`    → [계속] ${company}`, 'log-info');
+      } else {
+        company = result;
+        addLog(`    → ${company}`, company === 'UNKNOWN' ? 'log-warn' : 'log-ok');
+        if (company !== 'UNKNOWN') lastCompany = company;
+      }
 
       if (!S.groups[company]) S.groups[company] = [];
       S.groups[company].push(i);   // 0-based index
 
-      addLog(`    → ${company}`, company === 'UNKNOWN' ? 'log-warn' : 'log-ok');
       setProgress(i + 1, totalPages);
 
       // API 호출 간격 (속도 제한 방지)
@@ -523,7 +534,10 @@ async function pageToJpegBase64(page, dpi = 150) {
 
 /**
  * Claude Haiku Vision API 호출
- * Python 코드의 extract_delivery_address_with_claude() 와 동일한 로직
+ * 반환값: 정규화된 회사명 문자열 | 'UNKNOWN' | 'CONTINUATION'
+ *
+ * CONTINUATION — DELIVERY ADDRESS 없음 + 페이지 표기(X of Y)에서 X > 1인 경우.
+ *               호출자(processPDF)가 이전 페이지 회사에 합산 처리합니다.
  */
 async function callClaudeVision(imgBase64, pageNum) {
   try {
@@ -537,7 +551,7 @@ async function callClaudeVision(imgBase64, pageNum) {
       },
       body: JSON.stringify({
         model:      'claude-haiku-4-5-20251001',
-        max_tokens: 128,
+        max_tokens: 160,
         messages: [{
           role: 'user',
           content: [
@@ -548,16 +562,27 @@ async function callClaudeVision(imgBase64, pageNum) {
             {
               type: 'text',
               text:
-                "This is a shipping packing list document.\n" +
-                "Locate the 'DELIVERY ADDRESS' section " +
-                "(usually a labeled box in the upper-right area).\n" +
-                "Extract ONLY the company name — " +
-                "the very first line of text that appears " +
-                "immediately after the 'DELIVERY ADDRESS' label.\n\n" +
-                "Reply using this exact format (nothing else):\n" +
-                "COMPANY: [company name]\n\n" +
-                "If the section is not visible, reply:\n" +
-                "COMPANY: UNKNOWN"
+                "This is a shipping packing list document.\n\n" +
+
+                "STEP 1 — Find the 'DELIVERY ADDRESS' box (usually upper-right area).\n" +
+                "If found, extract ONLY the company name:\n" +
+                "  • It is the very first line of text immediately after the 'DELIVERY ADDRESS' label.\n" +
+                "  • Read every character with extreme care:\n" +
+                "    - An underscore ( _ ) is NOT a space. 'ALPHA_TECH' must stay 'ALPHA_TECH'.\n" +
+                "    - Distinguish visually similar letters: H vs D, J vs I/U, GG vs G, M vs N, etc.\n" +
+                "    - Preserve special characters exactly: & ( ) - / as they appear.\n" +
+                "  • Do NOT add, remove, or change any character.\n\n" +
+
+                "STEP 2 — Only if 'DELIVERY ADDRESS' is NOT visible on this page:\n" +
+                "  • Look anywhere on the page for a page counter such as\n" +
+                "    '2 of 5', 'Page 3 of 4', '3/5', etc.\n" +
+                "  • If the current page number shown is greater than 1,\n" +
+                "    this is a continuation of the previous document — reply exactly: CONTINUATION\n\n" +
+
+                "Reply using EXACTLY ONE of the following (nothing else):\n" +
+                "COMPANY: [company name]   ← DELIVERY ADDRESS found\n" +
+                "CONTINUATION              ← no DELIVERY ADDRESS, but page X of Y where X > 1\n" +
+                "COMPANY: UNKNOWN          ← no DELIVERY ADDRESS and not a continuation page"
             }
           ]
         }]
@@ -571,6 +596,10 @@ async function callClaudeVision(imgBase64, pageNum) {
 
     const data  = await resp.json();
     const text  = data.content?.[0]?.text?.trim() ?? '';
+
+    // CONTINUATION 판정
+    if (/^CONTINUATION\b/i.test(text)) return 'CONTINUATION';
+
     const match = text.match(/COMPANY:\s*(.+)/i);
     return match ? normalizeCompany(match[1].trim()) : 'UNKNOWN';
 
