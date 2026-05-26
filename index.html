@@ -12,19 +12,13 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
       background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 32px 16px;
+      min-height: 100vh; display: flex; align-items: flex-start;
+      justify-content: center; padding: 32px 16px;
     }
     .card {
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 8px 40px rgba(0, 100, 180, 0.10);
-      width: 100%;
-      max-width: 660px;
-      padding: 36px 32px;
+      background: #fff; border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0,100,180,.10);
+      width: 100%; max-width: 660px; padding: 36px 32px;
     }
     .screen { display: none; }
     .screen.active { display: block; }
@@ -33,53 +27,29 @@
     label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
     .input-wrap { position: relative; margin-bottom: 12px; }
     input[type=password], input[type=text] {
-      width: 100%;
-      border: 2px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 12px 44px 12px 16px;
-      font-size: 14px;
-      color: #1e293b;
-      outline: none;
-      transition: border-color 0.2s;
+      width: 100%; border: 2px solid #e2e8f0; border-radius: 10px;
+      padding: 12px 44px 12px 16px; font-size: 14px; color: #1e293b;
+      outline: none; transition: border-color .2s;
     }
     input:focus { border-color: #38bdf8; }
     .toggle-btn {
-      position: absolute;
-      right: 12px; top: 50%;
-      transform: translateY(-50%);
-      background: none; border: none;
-      cursor: pointer; font-size: 18px;
-      color: #94a3b8;
-      user-select: none;
-      line-height: 1;
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; font-size: 18px;
+      color: #94a3b8; user-select: none; line-height: 1;
     }
     .security-note {
-      background: #f0fdf4;
-      border: 1px solid #86efac;
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 12px;
-      color: #15803d;
-      line-height: 1.65;
-      margin-bottom: 20px;
+      background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px;
+      padding: 10px 14px; font-size: 12px; color: #15803d;
+      line-height: 1.65; margin-bottom: 20px;
     }
     .btn {
-      display: block;
-      width: 100%;
-      background: #0284c7;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 13px 24px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.18s, transform 0.1s;
-      text-align: center;
-      margin-bottom: 0;
+      display: block; width: 100%; background: #0284c7; color: #fff;
+      border: none; border-radius: 10px; padding: 13px 24px;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      transition: background .18s, transform .1s; text-align: center; margin-bottom: 0;
     }
     .btn:hover:not(:disabled) { background: #0369a1; }
-    .btn:active:not(:disabled) { transform: scale(0.99); }
+    .btn:active:not(:disabled) { transform: scale(.99); }
     .btn:disabled { background: #94a3b8; cursor: not-allowed; }
     .btn + .btn { margin-top: 10px; }
     .btn-secondary { background: #fff; color: #0284c7; border: 2px solid #0284c7; }
@@ -89,15 +59,9 @@
     .error-msg { color: #dc2626; font-size: 12px; margin-bottom: 10px; }
     .hidden { display: none !important; }
     .upload-area {
-      border: 2px dashed #7dd3fc;
-      border-radius: 14px;
-      padding: 44px 24px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: #f8fafc;
-      margin-bottom: 20px;
-      user-select: none;
+      border: 2px dashed #7dd3fc; border-radius: 14px; padding: 44px 24px;
+      text-align: center; cursor: pointer; transition: all .2s;
+      background: #f8fafc; margin-bottom: 20px; user-select: none;
     }
     .upload-area:hover, .upload-area.dragover { border-color: #0284c7; background: #e0f2fe; }
     .upload-area.file-selected { border-color: #34d399; background: #ecfdf5; }
@@ -105,101 +69,53 @@
     .upload-text { color: #475569; font-size: 14px; line-height: 1.6; }
     .upload-text strong { color: #0284c7; }
     .upload-area.file-selected .upload-text strong { color: #059669; }
-    .progress-wrap {
-      background: #f1f5f9;
-      border-radius: 100px;
-      height: 12px;
-      overflow: hidden;
-      margin-bottom: 8px;
-    }
+    .progress-wrap { background: #f1f5f9; border-radius: 100px; height: 12px; overflow: hidden; margin-bottom: 8px; }
     .progress-bar {
-      height: 100%;
-      background: linear-gradient(90deg, #38bdf8, #0284c7);
-      border-radius: 100px;
-      transition: width 0.35s ease;
-      width: 0%;
+      height: 100%; background: linear-gradient(90deg, #38bdf8, #0284c7);
+      border-radius: 100px; transition: width .35s ease; width: 0%;
     }
     .progress-text { font-size: 12px; color: #64748b; text-align: right; margin-bottom: 18px; }
     .log-box {
-      background: #0f172a;
-      border-radius: 10px;
-      padding: 14px 16px;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 12px;
-      color: #94a3b8;
-      max-height: 240px;
-      overflow-y: auto;
-      line-height: 1.8;
+      background: #0f172a; border-radius: 10px; padding: 14px 16px;
+      font-family: 'Courier New', monospace; font-size: 12px; color: #94a3b8;
+      max-height: 240px; overflow-y: auto; line-height: 1.8;
     }
     .log-ok   { color: #4ade80; }
     .log-warn { color: #fb923c; }
     .log-info { color: #60a5fa; }
     .log-dim  { color: #475569; }
     .summary-bar {
-      background: #f0f9ff;
-      border: 1px solid #bae6fd;
-      border-radius: 10px;
-      padding: 12px 16px;
-      font-size: 13px;
-      color: #0369a1;
-      margin-bottom: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 6px;
+      background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px;
+      padding: 12px 16px; font-size: 13px; color: #0369a1; margin-bottom: 16px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 6px;
     }
     .summary-bar .filename { color: #64748b; font-size: 12px; }
-    table.result-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      margin-bottom: 20px;
-    }
+    table.result-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px; }
     .result-table th {
-      background: #bae6fd;
-      padding: 9px 12px;
-      text-align: left;
-      font-weight: 600;
-      color: #0369a1;
-      border: 1px solid #7dd3fc;
+      background: #bae6fd; padding: 9px 12px; text-align: left;
+      font-weight: 600; color: #0369a1; border: 1px solid #7dd3fc;
     }
     .result-table td { padding: 8px 12px; border: 1px solid #bae6fd; color: #334155; vertical-align: top; }
     .result-table tr:nth-child(even) td { background: #f8fbff; }
     .page-nums { color: #64748b; font-size: 12px; }
     .badge {
-      display: inline-block;
-      background: #0284c7;
-      color: #fff;
-      border-radius: 100px;
-      padding: 2px 9px;
-      font-size: 11px;
-      font-weight: 700;
+      display: inline-block; background: #0284c7; color: #fff;
+      border-radius: 100px; padding: 2px 9px; font-size: 11px; font-weight: 700;
     }
     hr { border: none; border-top: 1px solid #e2e8f0; margin: 20px 0; }
-    .model-badge {
-      display: inline-block;
-      background: #7c3aed;
-      color: #fff;
-      border-radius: 6px;
-      padding: 2px 8px;
-      font-size: 11px;
-      font-weight: 600;
-      margin-left: 8px;
-      vertical-align: middle;
-    }
   </style>
 </head>
 <body>
 <div class="card">
 
-  <!-- SCREEN 1 — API 키 입력 -->
+  <!-- SCREEN 1 -->
   <div id="screen-setup" class="screen active">
-    <h1>📦 Packing List AI 분류기 <span class="model-badge">Sonnet</span></h1>
+    <h1>📦 Packing List AI 분류기</h1>
     <p class="subtitle">
-      Claude Sonnet Vision AI가 각 페이지의 <strong>DELIVERY ADDRESS</strong>를 자동 인식하여<br>
+      Claude Vision AI가 각 페이지의 <strong>DELIVERY ADDRESS</strong>를 자동 인식하여<br>
       고객사별 PDF로 분리 후 ZIP으로 다운로드합니다.<br>
-      DELIVERY ADDRESS가 없는 페이지는 앞 페이지 고객사에 자동 포함됩니다.
+      DELIVERY ADDRESS가 없는 연속 시트는 앞 페이지 고객사에 자동 포함됩니다.
     </p>
     <label for="api-key-input">Anthropic API 키</label>
     <div class="input-wrap">
@@ -215,15 +131,13 @@
     <button class="btn" onclick="startApp()">시작하기 →</button>
   </div>
 
-  <!-- SCREEN 2 — PDF 업로드 -->
+  <!-- SCREEN 2 -->
   <div id="screen-upload" class="screen">
     <h1>📄 PDF 업로드</h1>
     <p class="subtitle">분류할 Packing List PDF 파일을 선택하세요.</p>
     <div class="upload-area" id="upload-area"
          onclick="document.getElementById('file-input').click()"
-         ondragover="onDragOver(event)"
-         ondragleave="onDragLeave(event)"
-         ondrop="onDrop(event)">
+         ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
       <div class="upload-icon" id="upload-icon">📁</div>
       <div class="upload-text" id="upload-text">
         <strong>클릭하여 파일 선택</strong> 또는 여기에 드래그
@@ -236,18 +150,16 @@
     <button class="btn btn-secondary" onclick="showScreen('screen-setup')">← 뒤로</button>
   </div>
 
-  <!-- SCREEN 3 — 분석 진행 중 -->
+  <!-- SCREEN 3 -->
   <div id="screen-processing" class="screen">
     <h1>🔍 AI 분석 중…</h1>
     <p class="subtitle" id="processing-subtitle">페이지를 분석하고 있습니다. 잠시 기다려 주세요.</p>
-    <div class="progress-wrap">
-      <div class="progress-bar" id="progress-bar"></div>
-    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
     <div class="progress-text" id="progress-text">0 / 0 페이지</div>
     <div class="log-box" id="log-box"></div>
   </div>
 
-  <!-- SCREEN 4 — 분류 결과 -->
+  <!-- SCREEN 4 -->
   <div id="screen-results" class="screen">
     <h1>✅ 분류 완료</h1>
     <p class="subtitle">고객사별 분류 결과입니다. ZIP 파일에 개별 PDF와 summary.csv가 포함됩니다.</p>
@@ -272,20 +184,15 @@
 </div>
 <script>
 // ═══════════════════════════════════════════════════════════════
-//  Global state
+//  State
 // ═══════════════════════════════════════════════════════════════
-const S = {
-  apiKey:   '',
-  pdfFile:  null,
-  pdfBytes: null,
-  groups:   {},   // { 'COMPANY NAME': [0-based page indices] }
-};
+const S = { apiKey:'', pdfFile:null, pdfBytes:null, groups:{} };
 
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 // ═══════════════════════════════════════════════════════════════
-//  Screen helpers
+//  Screen
 // ═══════════════════════════════════════════════════════════════
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -293,7 +200,7 @@ function showScreen(id) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  SCREEN 1 — API 키
+//  Screen 1 — API 키
 // ═══════════════════════════════════════════════════════════════
 function toggleKeyVisibility() {
   const inp = document.getElementById('api-key-input');
@@ -318,66 +225,58 @@ function startApp() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  SCREEN 2 — 파일 업로드
+//  Screen 2 — 업로드
 // ═══════════════════════════════════════════════════════════════
 function onDragOver(e)  { e.preventDefault(); document.getElementById('upload-area').classList.add('dragover'); }
 function onDragLeave()  { document.getElementById('upload-area').classList.remove('dragover'); }
 function onDrop(e) {
   e.preventDefault();
   document.getElementById('upload-area').classList.remove('dragover');
-  const file = e.dataTransfer.files[0];
-  if (file) onFileSelected(file);
+  if (e.dataTransfer.files[0]) onFileSelected(e.dataTransfer.files[0]);
 }
 function onFileSelected(file) {
   const err = document.getElementById('upload-err');
   if (!file || !file.name.toLowerCase().endsWith('.pdf')) {
     err.textContent = '⚠️ PDF 파일만 업로드할 수 있습니다.';
-    err.classList.remove('hidden');
-    return;
+    err.classList.remove('hidden'); return;
   }
   err.classList.add('hidden');
   S.pdfFile = file;
-  const area = document.getElementById('upload-area');
-  area.classList.add('file-selected');
+  document.getElementById('upload-area').classList.add('file-selected');
   document.getElementById('upload-icon').textContent = '✅';
   document.getElementById('upload-text').innerHTML =
     `<strong>${escapeHtml(file.name)}</strong><br>` +
     `<span style="font-size:12px;color:#059669;display:block;margin-top:4px">` +
-    `${(file.size / 1024).toFixed(1)} KB — 업로드 준비 완료</span>`;
+    `${(file.size/1024).toFixed(1)} KB — 업로드 준비 완료</span>`;
   document.getElementById('process-btn').disabled = false;
 }
 async function startProcessing() {
   showScreen('screen-processing');
   const reader = new FileReader();
-  reader.onload = async (e) => {
-    S.pdfBytes = new Uint8Array(e.target.result);
-    await processPDF();
-  };
+  reader.onload = async (e) => { S.pdfBytes = new Uint8Array(e.target.result); await processPDF(); };
   reader.readAsArrayBuffer(S.pdfFile);
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  SCREEN 3 — 분석 처리
+//  Screen 3 — 처리
 // ═══════════════════════════════════════════════════════════════
-function addLog(text, cls = '') {
-  const box  = document.getElementById('log-box');
+function addLog(text, cls='') {
+  const box = document.getElementById('log-box');
   const line = document.createElement('div');
   if (cls) line.className = cls;
   line.textContent = text;
   box.appendChild(line);
   box.scrollTop = box.scrollHeight;
 }
-function setProgress(current, total) {
-  const pct = total ? Math.round(current / total * 100) : 0;
-  document.getElementById('progress-bar').style.width = pct + '%';
-  document.getElementById('progress-text').textContent =
-    `${current} / ${total} 페이지  (${pct}%)`;
+function setProgress(cur, total) {
+  const pct = total ? Math.round(cur/total*100) : 0;
+  document.getElementById('progress-bar').style.width = pct+'%';
+  document.getElementById('progress-text').textContent = `${cur} / ${total} 페이지  (${pct}%)`;
 }
 
 async function processPDF() {
   document.getElementById('log-box').innerHTML = '';
   S.groups = {};
-
   try {
     addLog('▶ PDF 로딩 중…', 'log-info');
     const pdfDoc     = await pdfjsLib.getDocument({ data: S.pdfBytes.slice() }).promise;
@@ -385,17 +284,15 @@ async function processPDF() {
     addLog(`✔ 로드 완료: ${totalPages}페이지`, 'log-ok');
     setProgress(0, totalPages);
     document.getElementById('processing-subtitle').textContent =
-      `총 ${totalPages}페이지를 Claude Sonnet Vision API로 분석 중입니다…`;
+      `총 ${totalPages}페이지를 Claude Vision API로 분석 중입니다…`;
 
-    // ── 이전 회사명 추적 (NO_LABEL 상속용) ──────────────────
-    let lastCompany = null;
+    let lastCompany = null;   // DELIVERY ADDRESS 없는 페이지 상속용
 
     for (let i = 0; i < totalPages; i++) {
-      addLog(`  페이지 ${i + 1}/${totalPages} 분석 중…`, 'log-dim');
-
-      const page   = await pdfDoc.getPage(i + 1);
-      const imgB64 = await pageToJpegBase64(page, 200);   // 200 DPI — Sonnet에 최적
-      const result = await callClaudeVision(imgB64, i + 1);
+      addLog(`  페이지 ${i+1}/${totalPages} 분석 중…`, 'log-dim');
+      const page   = await pdfDoc.getPage(i+1);
+      const imgB64 = await pageToJpegBase64(page, 200);
+      const result = await callClaudeVision(imgB64, i+1);
 
       let company;
       if (result === 'NO_LABEL') {
@@ -410,36 +307,30 @@ async function processPDF() {
       }
 
       if (!S.groups[company]) S.groups[company] = [];
-      S.groups[company].push(i);   // 0-based index
-
-      setProgress(i + 1, totalPages);
-      if (i < totalPages - 1) await delay(300);   // Sonnet은 약간 더 여유 확보
+      S.groups[company].push(i);
+      setProgress(i+1, totalPages);
+      if (i < totalPages-1) await delay(250);
     }
 
-    const groupCount = Object.keys(S.groups).length;
-    addLog(`\n✅ 완료!  ${groupCount}개 고객 그룹 발견`, 'log-ok');
+    addLog(`\n✅ 완료!  ${Object.keys(S.groups).length}개 고객 그룹 발견`, 'log-ok');
     await delay(600);
     showResults();
 
-  } catch (err) {
+  } catch(err) {
     addLog(`❌ 오류: ${err.message}`, 'log-warn');
-    document.getElementById('processing-subtitle').textContent =
-      '오류가 발생했습니다. 뒤로 가서 다시 시도해주세요.';
+    document.getElementById('processing-subtitle').textContent = '오류가 발생했습니다. 뒤로 가서 다시 시도해주세요.';
     const btn = document.createElement('button');
-    btn.className = 'btn btn-secondary';
-    btn.style.marginTop = '16px';
-    btn.textContent = '← 뒤로';
-    btn.onclick = () => showScreen('screen-upload');
+    btn.className = 'btn btn-secondary'; btn.style.marginTop = '16px';
+    btn.textContent = '← 뒤로'; btn.onclick = () => showScreen('screen-upload');
     document.getElementById('screen-processing').appendChild(btn);
   }
 }
 
 /**
- * PDF 페이지 → JPEG base64
- * 200 DPI: 고해상도 렌더링으로 Sonnet 인식률 극대화
+ * PDF 페이지 → JPEG base64  (200 DPI, quality 0.85)
  */
-async function pageToJpegBase64(page, dpi = 200) {
-  const scale    = dpi / 72;
+async function pageToJpegBase64(page, dpi=200) {
+  const scale    = dpi/72;
   const viewport = page.getViewport({ scale });
   const canvas   = document.createElement('canvas');
   canvas.width   = viewport.width;
@@ -450,75 +341,98 @@ async function pageToJpegBase64(page, dpi = 200) {
 }
 
 /**
- * Claude Sonnet Vision API 호출
+ * Claude Haiku Vision API 호출  (v8)
  *
  * 반환값:
- *   'NO_LABEL'        — 이 페이지에 DELIVERY ADDRESS 섹션이 없음 (연속 시트 등)
- *   'UNKNOWN'         — 섹션은 있으나 회사명 판독 불가
- *   'COMPANY NAME'    — 정상 추출
+ *   'NO_LABEL'     — DELIVERY ADDRESS 섹션이 이 페이지에 없음 (연속 시트)
+ *   'UNKNOWN'      — 섹션은 있으나 회사명 판독 불가
+ *   '[회사명]'     — 정상 추출
  *
- * NO_LABEL 반환 시 processPDF()가 이전 회사명을 상속합니다.
+ * 속도 제한(429) 시 최대 3회 재시도 (2초·4초·8초 대기).
  */
 async function callClaudeVision(imgBase64, pageNum) {
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key':                                 S.apiKey,
-        'anthropic-version':                         '2023-06-01',
-        'content-type':                              'application/json',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model:      'claude-sonnet-4-6',
-        max_tokens: 128,
-        messages: [{
-          role: 'user',
-          content: [
-            {
-              type:   'image',
-              source: { type: 'base64', media_type: 'image/jpeg', data: imgBase64 }
-            },
-            {
-              type: 'text',
-              text:
-                "This is a shipping packing list document.\n" +
-                "Locate the 'DELIVERY ADDRESS' section " +
-                "(usually a labeled box in the upper-right area).\n" +
-                "Extract ONLY the company name — " +
-                "the very first line of text that appears " +
-                "immediately after the 'DELIVERY ADDRESS' label.\n\n" +
-                "Rules:\n" +
-                "• Read the first line only — stop at the first line break.\n" +
-                "• Copy every character exactly: underscores ( _ ), symbols, spacing.\n" +
-                "• Underscore ≠ space. Zero ≠ O. H ≠ D. Copy what you see.\n\n" +
-                "Reply with EXACTLY ONE of the following — nothing else:\n" +
-                "COMPANY: [company name]        ← DELIVERY ADDRESS box is visible\n" +
-                "COMPANY: UNKNOWN               ← box visible but name is illegible\n" +
-                "NO_LABEL                       ← DELIVERY ADDRESS box is absent from this page"
-            }
-          ]
-        }]
-      })
-    });
+  const MAX_RETRY = 3;
+  for (let attempt = 1; attempt <= MAX_RETRY; attempt++) {
+    try {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key':                                 S.apiKey,
+          'anthropic-version':                         '2023-06-01',
+          'content-type':                              'application/json',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model:      'claude-haiku-4-5-20251001',
+          max_tokens: 128,
+          messages: [{
+            role: 'user',
+            content: [
+              { type:'image', source:{ type:'base64', media_type:'image/jpeg', data:imgBase64 } },
+              { type:'text',  text:
+                "This is a shipping packing list document.\n\n" +
 
-    if (!resp.ok) {
-      console.warn(`API error (page ${pageNum}):`, await resp.text().catch(() => ''));
+                "Find the 'DELIVERY ADDRESS' section — a labeled box usually in the upper-right area.\n\n" +
+
+                "IF the 'DELIVERY ADDRESS' label/box IS visible:\n" +
+                "  Extract the company name — the very first line of text immediately after the label.\n" +
+                "  Read ONLY that first line; stop there.\n" +
+                "  Do NOT read address, city, country, or postal code lines below.\n" +
+                "  Transcribe every character exactly as printed:\n" +
+                "    • Underscore ( _ ) is NOT a space.\n" +
+                "      'ALPHA TECH_DONGHAE' has a space before the underscore — copy exactly.\n" +
+                "    • Zero ( 0 ) ≠ letter O.  H ≠ D.  J ≠ I or U.  GG ≠ G.  RN ≠ M.\n" +
+                "    • Copy symbols verbatim: & ( ) - / , . as they appear.\n" +
+                "    • Do NOT add, remove, or alter any character.\n" +
+                "  → If name is readable:   COMPANY: [exact company name]\n" +
+                "  → If name is illegible:  COMPANY: UNKNOWN\n\n" +
+
+                "IF the 'DELIVERY ADDRESS' label/box does NOT appear anywhere on this page\n" +
+                "  (e.g. a 2nd or later sheet of a multi-page shipment with no delivery header):\n" +
+                "  → Reply exactly:  NO_LABEL\n" +
+                "  Note: Use NO_LABEL only when the box is truly absent — not when the name is hard to read.\n\n" +
+
+                "Reply with EXACTLY ONE of the following — nothing else:\n" +
+                "COMPANY: [exact company name]\n" +
+                "COMPANY: UNKNOWN\n" +
+                "NO_LABEL"
+              }
+            ]
+          }]
+        })
+      });
+
+      // 속도 제한(429) — 대기 후 재시도
+      if (resp.status === 429) {
+        const waitMs = attempt * 2000;
+        addLog(`    ⚠️ 속도 제한 — ${waitMs/1000}초 대기 후 재시도 (${attempt}/${MAX_RETRY})`, 'log-warn');
+        await delay(waitMs);
+        continue;
+      }
+
+      if (!resp.ok) {
+        const errText = await resp.text().catch(()=>'');
+        console.warn(`API error (p${pageNum}):`, errText);
+        if (attempt < MAX_RETRY) { await delay(1000); continue; }
+        return 'UNKNOWN';
+      }
+
+      const data = await resp.json();
+      const text = data.content?.[0]?.text?.trim() ?? '';
+
+      // NO_LABEL 먼저 확인
+      if (/^NO_LABEL\b/i.test(text)) return 'NO_LABEL';
+
+      const match = text.match(/COMPANY:\s*(.+)/i);
+      return match ? normalizeCompany(match[1].trim()) : 'UNKNOWN';
+
+    } catch(e) {
+      console.warn(`Page ${pageNum} attempt ${attempt} error:`, e);
+      if (attempt < MAX_RETRY) { await delay(1000); continue; }
       return 'UNKNOWN';
     }
-    const data = await resp.json();
-    const text = data.content?.[0]?.text?.trim() ?? '';
-
-    // NO_LABEL 먼저 확인
-    if (/^NO_LABEL\b/i.test(text)) return 'NO_LABEL';
-
-    const match = text.match(/COMPANY:\s*(.+)/i);
-    return match ? normalizeCompany(match[1].trim()) : 'UNKNOWN';
-
-  } catch (e) {
-    console.warn(`Page ${pageNum} error:`, e);
-    return 'UNKNOWN';
   }
+  return 'UNKNOWN';
 }
 
 /**
@@ -535,20 +449,18 @@ function normalizeCompany(name) {
 const delay = ms => new Promise(r => setTimeout(r, ms));
 
 // ═══════════════════════════════════════════════════════════════
-//  SCREEN 4 — 결과 표시
+//  Screen 4 — 결과
 // ═══════════════════════════════════════════════════════════════
 function showResults() {
-  const totalPages  = Object.values(S.groups).reduce((a, b) => a + b.length, 0);
+  const totalPages  = Object.values(S.groups).reduce((a,b)=>a+b.length, 0);
   const totalGroups = Object.keys(S.groups).length;
   document.getElementById('result-summary').textContent =
     `총 ${totalPages}페이지 → ${totalGroups}개 그룹으로 분류 완료`;
   document.getElementById('result-filename').textContent = S.pdfFile.name;
-
-  const tbody = document.getElementById('result-tbody');
+  const tbody  = document.getElementById('result-tbody');
   tbody.innerHTML = '';
-  const sorted = Object.entries(S.groups).sort(([a], [b]) => a.localeCompare(b));
-  sorted.forEach(([company, pages]) => {
-    const nums = [...pages].sort((a, b) => a - b).map(p => p + 1).join(', ');
+  Object.entries(S.groups).sort(([a],[b])=>a.localeCompare(b)).forEach(([company, pages]) => {
+    const nums = [...pages].sort((a,b)=>a-b).map(p=>p+1).join(', ');
     tbody.insertAdjacentHTML('beforeend', `
       <tr>
         <td>${escapeHtml(company)}</td>
@@ -564,50 +476,40 @@ function showResults() {
 // ═══════════════════════════════════════════════════════════════
 async function downloadZip() {
   const btn = document.getElementById('download-btn');
-  btn.disabled    = true;
-  btn.textContent = '⏳ ZIP 생성 중…';
+  btn.disabled = true; btn.textContent = '⏳ ZIP 생성 중…';
   try {
     const zip    = new JSZip();
-    const ts     = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
-    const sorted = Object.entries(S.groups).sort(([a], [b]) => a.localeCompare(b));
+    const ts     = new Date().toISOString().replace(/[^0-9]/g,'').slice(0,14);
+    const sorted = Object.entries(S.groups).sort(([a],[b])=>a.localeCompare(b));
 
-    // summary.csv
     let csv = '﻿company,page_count,pages\n';
     sorted.forEach(([company, pages]) => {
-      const nums = [...pages].sort((a, b) => a - b).map(p => p + 1).join(' ');
-      csv += `"${company.replace(/"/g, '""')}",${pages.length},"${nums}"\n`;
+      const nums = [...pages].sort((a,b)=>a-b).map(p=>p+1).join(' ');
+      csv += `"${company.replace(/"/g,'""')}",${pages.length},"${nums}"\n`;
     });
     zip.file('summary.csv', csv);
 
-    // 고객사별 PDF
     const srcDoc = await PDFLib.PDFDocument.load(S.pdfBytes);
-    for (let idx = 0; idx < sorted.length; idx++) {
+    for (let idx=0; idx<sorted.length; idx++) {
       const [company, pages] = sorted[idx];
       const newDoc   = await PDFLib.PDFDocument.create();
-      const pageIdxs = [...pages].sort((a, b) => a - b);
+      const pageIdxs = [...pages].sort((a,b)=>a-b);
       const copied   = await newDoc.copyPages(srcDoc, pageIdxs);
       copied.forEach(p => newDoc.addPage(p));
       const pdfOut   = await newDoc.save();
-      const safeName = company.replace(/[^\w\-. ()]+/g, '_').slice(0, 80).trim() || 'UNKNOWN';
-      zip.file(`${String(idx + 1).padStart(3, '0')}_${safeName}_${ts}.pdf`, pdfOut);
+      const safeName = company.replace(/[^\w\-. ()]+/g,'_').slice(0,80).trim() || 'UNKNOWN';
+      zip.file(`${String(idx+1).padStart(3,'0')}_${safeName}_${ts}.pdf`, pdfOut);
     }
 
-    const blob    = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
-    const baseName = S.pdfFile.name.replace(/\.pdf$/i, '');
-    const url     = URL.createObjectURL(blob);
-    const a       = document.createElement('a');
-    a.href = url;
-    a.download = `packing_list_split_${baseName}_${ts}.zip`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 10000);
-    btn.textContent = '✅ 다운로드 완료';
-    btn.disabled    = false;
-  } catch (e) {
-    console.error(e);
-    btn.textContent = '❌ 오류 — 다시 시도';
-    btn.disabled    = false;
+    const blob = await zip.generateAsync({ type:'blob', compression:'DEFLATE' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = `packing_list_split_${S.pdfFile.name.replace(/\.pdf$/i,'')}_${ts}.zip`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 10000);
+    btn.textContent = '✅ 다운로드 완료'; btn.disabled = false;
+  } catch(e) {
+    console.error(e); btn.textContent = '❌ 오류 — 다시 시도'; btn.disabled = false;
   }
 }
 
@@ -615,7 +517,7 @@ async function downloadZip() {
 //  초기화
 // ═══════════════════════════════════════════════════════════════
 function resetApp() {
-  S.pdfFile = null; S.pdfBytes = null; S.groups = {};
+  S.pdfFile=null; S.pdfBytes=null; S.groups={};
   document.getElementById('upload-area').classList.remove('file-selected');
   document.getElementById('upload-icon').textContent = '📁';
   document.getElementById('upload-text').innerHTML =
@@ -631,9 +533,7 @@ function resetApp() {
 }
 
 function escapeHtml(s) {
-  return String(s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 </script>
 </body>
