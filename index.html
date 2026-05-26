@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📦 Packing List AI 분류기</title>
+
+  <!-- PDF.js — PDF 렌더링 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- pdf-lib — PDF 페이지 분리 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <!-- JSZip — ZIP 생성 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0, 100, 180, 0.10);
+      width: 100%;
+      max-width: 660px;
+      padding: 36px 32px;
+    }
+
+    /* ── Screen visibility ── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Typography ── */
+    h1 { font-size: 22px; font-weight: 700; color: #0369a1; margin-bottom: 4px; }
+    .subtitle { color: #64748b; font-size: 13px; margin-bottom: 24px; line-height: 1.6; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
+
+    /* ── Inputs ── */
+    .input-wrap { position: relative; margin-bottom: 12px; }
+    input[type=password], input[type=text] {
+      width: 100%;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 44px 12px 16px;
+      font-size: 14px;
+      color: #1e293b;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: #38bdf8; }
+    .toggle-btn {
+      position: absolute;
+      right: 12px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      cursor: pointer; font-size: 18px;
+      color: #94a3b8;
+      user-select: none;
+      line-height: 1;
+    }
+
+    /* ── Security note ── */
+    .security-note {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #15803d;
+      line-height: 1.65;
+      margin-bottom: 20px;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: block;
+      width: 100%;
+      background: #0284c7;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s, transform 0.1s;
+      text-align: center;
+      margin-bottom: 0;
+    }
+    .btn:hover:not(:disabled) { background: #0369a1; }
+    .btn:active:not(:disabled) { transform: scale(0.99); }
+    .btn:disabled { background: #94a3b8; cursor: not-allowed; }
+    .btn + .btn { margin-top: 10px; }
+    .btn-secondary {
+      background: #fff;
+      color: #0284c7;
+      border: 2px solid #0284c7;
+    }
+    .btn-secondary:hover:not(:disabled) { background: #f0f9ff; }
+    .btn-green { background: #16a34a; }
+    .btn-green:hover:not(:disabled) { background: #15803d; }
+
+    /* ── Errors ── */
+    .error-msg { color: #dc2626; font-size: 12px; margin-bottom: 10px; }
+    .hidden { display: none !important; }
+
+    /* ── Upload area ── */
+    .upload-area {
+      border: 2px dashed #7dd3fc;
+      border-radius: 14px;
+      padding: 44px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #f8fafc;
+      margin-bottom: 20px;
+      user-select: none;
+    }
+    .upload-area:hover, .upload-area.dragover {
+      border-color: #0284c7;
+      background: #e0f2fe;
+    }
+    .upload-area.file-selected {
+      border-color: #34d399;
+      background: #ecfdf5;
+    }
+    .upload-icon { font-size: 52px; margin-bottom: 12px; }
+    .upload-text { color: #475569; font-size: 14px; line-height: 1.6; }
+    .upload-text strong { color: #0284c7; }
+    .upload-area.file-selected .upload-text strong { color: #059669; }
+
+    /* ── Progress ── */
+    .progress-wrap {
+      background: #f1f5f9;
+      border-radius: 100px;
+      height: 12px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #38bdf8, #0284c7);
+      border-radius: 100px;
+      transition: width 0.35s ease;
+      width: 0%;
+    }
+    .progress-text {
+      font-size: 12px;
+      color: #64748b;
+      text-align: right;
+      margin-bottom: 18px;
+    }
+
+    /* ── Log box ── */
+    .log-box {
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px;
+      color: #94a3b8;
+      max-height: 240px;
+      overflow-y: auto;
+      line-height: 1.8;
+    }
+    .log-ok   { color: #4ade80; }
+    .log-warn { color: #fb923c; }
+    .log-info { color: #60a5fa; }
+    .log-dim  { color: #475569; }
+
+    /* ── Results ── */
+    .summary-bar {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #0369a1;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .summary-bar .filename { color: #64748b; font-size: 12px; }
+    table.result-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+    .result-table th {
+      background: #bae6fd;
+      padding: 9px 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #0369a1;
+      border: 1px solid #7dd3fc;
+    }
+    .result-table td {
+      padding: 8px 12px;
+      border: 1px solid #bae6fd;
+      color: #334155;
+      vertical-align: top;
+    }
+    .result-table tr:nth-child(even) td { background: #f8fbff; }
+    .page-nums { color: #64748b; font-size: 12px; }
+    .badge {
+      display: inline-block;
+      background: #0284c7;
+      color: #fff;
+      border-radius: 100px;
+      padding: 2px 9px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* ── Divider ── */
+    hr { border: none; border-top: 1px solid #e2e8f0; margin: 20px 0; }
+  </style>
+</head>
+<body>
+<div class="card">
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 1 — API 키 입력
+  ═══════════════════════════════════════════ -->
+  <div id="screen-setup" class="screen active">
+    <h1>📦 Packing List AI 분류기</h1>
+    <p class="subtitle">
+      Claude Vision AI가 각 페이지의 <strong>DELIVERY ADDRESS</strong>를 자동 인식하여<br>
+      고객사별 PDF로 분리 후 ZIP으로 다운로드합니다.
+    </p>
+
+    <label for="api-key-input">Anthropic API 키</label>
+    <div class="input-wrap">
+      <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." autocomplete="off" />
+      <button class="toggle-btn" id="toggle-key-btn" onclick="toggleKeyVisibility()" title="API 키 표시/숨기기">👁</button>
+    </div>
+
+    <div class="security-note">
+      🔐 <strong>보안 안내</strong> — API 키는 이 페이지의 자바스크립트 메모리에만 저장됩니다.<br>
+      localStorage·sessionStorage·쿠키에 기록되지 않으며, 탭을 닫으면 즉시 삭제됩니다.<br>
+      외부 서버로 전송되지 않으며 <strong>api.anthropic.com</strong>에만 직접 호출됩니다.
+    </div>
+
+    <div id="setup-err" class="error-msg hidden"></div>
+    <button class="btn" onclick="startApp()">시작하기 →</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 2 — PDF 업로드
+  ═══════════════════════════════════════════ -->
+  <div id="screen-upload" class="screen">
+    <h1>📄 PDF 업로드</h1>
+    <p class="subtitle">분류할 Packing List PDF 파일을 선택하세요.</p>
+
+    <div class="upload-area" id="upload-area"
+         onclick="document.getElementById('file-input').click()"
+         ondragover="onDragOver(event)"
+         ondragleave="onDragLeave(event)"
+         ondrop="onDrop(event)">
+      <div class="upload-icon" id="upload-icon">📁</div>
+      <div class="upload-text" id="upload-text">
+        <strong>클릭하여 파일 선택</strong> 또는 여기에 드래그
+        <br><span style="font-size:12px;color:#94a3b8;display:block;margin-top:4px">PDF 파일만 지원</span>
+      </div>
+    </div>
+    <input type="file" id="file-input" accept=".pdf" style="display:none" onchange="onFileSelected(this.files[0])">
+
+    <div id="upload-err" class="error-msg hidden"></div>
+    <button class="btn" id="process-btn" onclick="startProcessing()" disabled>분석 시작 →</button>
+    <button class="btn btn-secondary" onclick="showScreen('screen-setup')">← 뒤로</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 3 — 분석 진행 중
+  ═══════════════════════════════════════════ -->
+  <div id="screen-processing" class="screen">
+    <h1>🔍 AI 분석 중…</h1>
+    <p class="subtitle" id="processing-subtitle">페이지를 분석하고 있습니다. 잠시 기다려 주세요.</p>
+
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <div class="progress-text" id="progress-text">0 / 0 페이지</div>
+
+    <div class="log-box" id="log-box"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 4 — 분류 결과
+  ═══════════════════════════════════════════ -->
+  <div id="screen-results" class="screen">
+    <h1>✅ 분류 완료</h1>
+    <p class="subtitle">고객사별 분류 결과입니다. ZIP 파일에 개별 PDF와 summary.csv가 포함됩니다.</p>
+
+    <div class="summary-bar">
+      <span id="result-summary"></span>
+      <span class="filename" id="result-filename"></span>
+    </div>
+
+    <table class="result-table">
+      <thead>
+        <tr>
+          <th>고객사 (DELIVERY ADDRESS)</th>
+          <th style="text-align:center;width:80px">페이지 수</th>
+          <th>페이지 번호</th>
+        </tr>
+      </thead>
+      <tbody id="result-tbody"></tbody>
+    </table>
+
+    <button class="btn btn-green" id="download-btn" onclick="downloadZip()">⬇️ ZIP 다운로드</button>
+    <button class="btn btn-secondary" onclick="resetApp()">🔄 새 파일 분석</button>
+  </div>
+
+</div>
+<!-- ─────────────────────────────────────────────────────────── -->
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  Global state
+// ═══════════════════════════════════════════════════════════════
+const S = {
+  apiKey:   '',
+  pdfFile:  null,
+  pdfBytes: null,
+  groups:   {},   // { 'COMPANY NAME': [0-based page indices, ...] }
+};
+
+// ─── PDF.js worker (must be set before any pdfjsLib call) ────
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+
+// ═══════════════════════════════════════════════════════════════
+//  Screen helpers
+// ═══════════════════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+//  SCREEN 1 — API 키
+// ═══════════════════════════════════════════════════════════════
+function toggleKeyVisibility() {
+  const inp = document.getElementById('api-key-input');
+  const btn = document.getElementById('toggle-key-btn');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.textContent = '🙈';
+    btn.title = 'API 키 숨기기';
+  } else {
+    inp.type = 'password';
+    btn.textContent = '👁';
+    btn.title = 'API 키 표시';
+  }
+}
+
+function startApp() {
+  const inp = document.getElementById('api-key-input');
+  const key = inp.value.trim();
+  const err = document.getElementById('setup-err');
+  if (!key.startsWith('sk-ant-')) {
+    err.textContent = '⚠️ 올바른 Anthropic API 키 형식(sk-ant-...)을 입력해주세요';
+    err.classList.remove('hidden');
+    return;
+  }
+  S.apiKey = key;
+  // 보안: 입력 필드에서 키 즉시 삭제
+  inp.value = '';
+  inp.type  = 'password';
+  document.getElementById('toggle-key-btn').textContent = '👁';
+  err.classList.add('hidden');
+  showScreen('screen-upload');
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+//  SCREEN 2 — 파일 업로드
+// ═══════════════════════════════════════════════════════════════
+function onDragOver(e) {
+  e.preventDefault();
+  document.getElementById('upload-area').classList.add('dragover');
+}
+function onDragLeave() {
+  document.getElementById('upload-area').classList.remove('dragover');
+}
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-area').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) onFileSelected(file);
+}
+
+function onFileSelected(file) {
+  const err = document.getElementById('upload-err');
+  if (!file || !file.name.toLowerCase().endsWith('.pdf')) {
+    err.textContent = '⚠️ PDF 파일만 업로드할 수 있습니다.';
+    err.classList.remove('hidden');
+    return;
+  }
+  err.classList.add('hidden');
+  S.pdfFile = file;
+
+  const area = document.getElementById('upload-area');
+  area.classList.add('file-selected');
+  document.getElementById('upload-icon').textContent = '✅';
+  document.getElementById('upload-text').innerHTML =
+    `<strong>${escapeHtml(file.name)}</strong><br>` +
+    `<span style="font-size:12px;color:#059669;display:block;margin-top:4px">` +
+    `${(file.size / 1024).toFixed(1)} KB — 업로드 준비 완료</span>`;
+  document.getElementById('process-btn').disabled = false;
+}
+
+async function startProcessing() {
+  showScreen('screen-processing');
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    S.pdfBytes = new Uint8Array(e.target.result);
+    await processPDF();
+  };
+  reader.readAsArrayBuffer(S.pdfFile);
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+//  SCREEN 3 — 분석 처리
+// ═══════════════════════════════════════════════════════════════
+function addLog(text, cls = '') {
+  const box  = document.getElementById('log-box');
+  const line = document.createElement('div');
+  if (cls) line.className = cls;
+  line.textContent = text;
+  box.appendChild(line);
+  box.scrollTop = box.scrollHeight;
+}
+
+function setProgress(current, total) {
+  const pct = total ? Math.round(current / total * 100) : 0;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-text').textContent =
+    `${current} / ${total} 페이지  (${pct}%)`;
+}
+
+async function processPDF() {
+  document.getElementById('log-box').innerHTML = '';
+  S.groups = {};
+
+  try {
+    // ① PDF 로드
+    addLog('▶ PDF 로딩 중…', 'log-info');
+    const pdfDoc     = await pdfjsLib.getDocument({ data: S.pdfBytes.slice() }).promise;
+    const totalPages = pdfDoc.numPages;
+    addLog(`✔ 로드 완료: ${totalPages}페이지`, 'log-ok');
+    setProgress(0, totalPages);
+    document.getElementById('processing-subtitle').textContent =
+      `총 ${totalPages}페이지를 Claude Vision API로 분석 중입니다…`;
+
+    // ② 페이지별 처리
+    for (let i = 0; i < totalPages; i++) {
+      addLog(`  페이지 ${i + 1}/${totalPages} 분석 중…`, 'log-dim');
+
+      const page     = await pdfDoc.getPage(i + 1);
+      const imgB64   = await pageToJpegBase64(page, 150);
+      const company  = await callClaudeVision(imgB64, i + 1);
+
+      if (!S.groups[company]) S.groups[company] = [];
+      S.groups[company].push(i);   // 0-based index
+
+      addLog(`    → ${company}`, company === 'UNKNOWN' ? 'log-warn' : 'log-ok');
+      setProgress(i + 1, totalPages);
+
+      // API 호출 간격 (속도 제한 방지)
+      if (i < totalPages - 1) await delay(250);
+    }
+
+    const groupCount = Object.keys(S.groups).length;
+    addLog(`\n✅ 완료!  ${groupCount}개 고객 그룹 발견`, 'log-ok');
+    await delay(600);
+    showResults();
+
+  } catch (err) {
+    addLog(`❌ 오류: ${err.message}`, 'log-warn');
+    document.getElementById('processing-subtitle').textContent =
+      '오류가 발생했습니다. 뒤로 가서 다시 시도해주세요.';
+
+    // 오류 화면에 뒤로 버튼 추가
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-secondary';
+    btn.style.marginTop = '16px';
+    btn.textContent = '← 뒤로';
+    btn.onclick = () => showScreen('screen-upload');
+    document.getElementById('screen-processing').appendChild(btn);
+  }
+}
+
+/**
+ * PDF 페이지 → JPEG base64
+ * JPEG를 사용하여 API 전송 크기를 최소화합니다 (PNG 대비 ~3–5배 작음).
+ */
+async function pageToJpegBase64(page, dpi = 150) {
+  const scale    = dpi / 72;
+  const viewport = page.getViewport({ scale });
+  const canvas   = document.createElement('canvas');
+  canvas.width   = viewport.width;
+  canvas.height  = viewport.height;
+  const ctx      = canvas.getContext('2d');
+  await page.render({ canvasContext: ctx, viewport }).promise;
+  return canvas.toDataURL('image/jpeg', 0.82).split(',')[1];
+}
+
+/**
+ * Claude Haiku Vision API 호출
+ * Python 코드의 extract_delivery_address_with_claude() 와 동일한 로직
+ */
+async function callClaudeVision(imgBase64, pageNum) {
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key':                              S.apiKey,
+        'anthropic-version':                      '2023-06-01',
+        'content-type':                           'application/json',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model:      'claude-haiku-4-5-20251001',
+        max_tokens: 128,
+        messages: [{
+          role: 'user',
+          content: [
+            {
+              type:   'image',
+              source: { type: 'base64', media_type: 'image/jpeg', data: imgBase64 }
+            },
+            {
+              type: 'text',
+              text:
+                "This is a shipping packing list document.\n" +
+                "Locate the 'DELIVERY ADDRESS' section " +
+                "(usually a labeled box in the upper-right area).\n" +
+                "Extract ONLY the company name — " +
+                "the very first line of text that appears " +
+                "immediately after the 'DELIVERY ADDRESS' label.\n\n" +
+                "Reply using this exact format (nothing else):\n" +
+                "COMPANY: [company name]\n\n" +
+                "If the section is not visible, reply:\n" +
+                "COMPANY: UNKNOWN"
+            }
+          ]
+        }]
+      })
+    });
+
+    if (!resp.ok) {
+      console.warn(`API error (page ${pageNum}):`, await resp.text().catch(() => ''));
+      return 'UNKNOWN';
+    }
+
+    const data  = await resp.json();
+    const text  = data.content?.[0]?.text?.trim() ?? '';
+    const match = text.match(/COMPANY:\s*(.+)/i);
+    return match ? normalizeCompany(match[1].trim()) : 'UNKNOWN';
+
+  } catch (e) {
+    console.warn(`Page ${pageNum} error:`, e);
+    return 'UNKNOWN';
+  }
+}
+
+/**
+ * Python 코드의 normalize_company_name() 과 동일
+ */
+function normalizeCompany(name) {
+  if (!name || name.toUpperCase() === 'UNKNOWN') return 'UNKNOWN';
+  let s = name.trim().toUpperCase();
+  s = s.replace(/\s+/g, ' ');
+  s = s.replace(/[.,;:]+$/, '');
+  return s.trim() || 'UNKNOWN';
+}
+
+const delay = ms => new Promise(r => setTimeout(r, ms));
+
+
+// ═══════════════════════════════════════════════════════════════
+//  SCREEN 4 — 결과 표시
+// ═══════════════════════════════════════════════════════════════
+function showResults() {
+  const totalPages  = Object.values(S.groups).reduce((a, b) => a + b.length, 0);
+  const totalGroups = Object.keys(S.groups).length;
+
+  document.getElementById('result-summary').textContent =
+    `총 ${totalPages}페이지 → ${totalGroups}개 그룹으로 분류 완료`;
+  document.getElementById('result-filename').textContent = S.pdfFile.name;
+
+  const tbody  = document.getElementById('result-tbody');
+  tbody.innerHTML = '';
+  const sorted = Object.entries(S.groups).sort(([a], [b]) => a.localeCompare(b));
+  sorted.forEach(([company, pages]) => {
+    const nums = [...pages].sort((a, b) => a - b).map(p => p + 1).join(', ');
+    tbody.insertAdjacentHTML('beforeend', `
+      <tr>
+        <td>${escapeHtml(company)}</td>
+        <td style="text-align:center"><span class="badge">${pages.length}</span></td>
+        <td class="page-nums">${nums}</td>
+      </tr>`);
+  });
+
+  showScreen('screen-results');
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+//  ZIP 다운로드
+// ═══════════════════════════════════════════════════════════════
+async function downloadZip() {
+  const btn = document.getElementById('download-btn');
+  btn.disabled    = true;
+  btn.textContent = '⏳ ZIP 생성 중…';
+
+  try {
+    const zip      = new JSZip();
+    const ts       = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
+    const sorted   = Object.entries(S.groups).sort(([a], [b]) => a.localeCompare(b));
+
+    // ── summary.csv (UTF-8 BOM for Excel compatibility) ───────
+    let csv = '﻿company,page_count,pages\n';
+    sorted.forEach(([company, pages]) => {
+      const nums = [...pages].sort((a, b) => a - b).map(p => p + 1).join(' ');
+      csv += `"${company.replace(/"/g, '""')}",${pages.length},"${nums}"\n`;
+    });
+    zip.file('summary.csv', csv);
+
+    // ── 고객사별 PDF (pdf-lib) ─────────────────────────────────
+    const srcDoc = await PDFLib.PDFDocument.load(S.pdfBytes);
+
+    for (let idx = 0; idx < sorted.length; idx++) {
+      const [company, pages] = sorted[idx];
+      const newDoc    = await PDFLib.PDFDocument.create();
+      const pageIdxs  = [...pages].sort((a, b) => a - b);
+      const copied    = await newDoc.copyPages(srcDoc, pageIdxs);
+      copied.forEach(p => newDoc.addPage(p));
+      const pdfOut    = await newDoc.save();
+
+      // 파일명에 사용할 수 없는 문자 제거
+      const safeName  = company.replace(/[^\w\-. ()]+/g, '_').slice(0, 80).trim() || 'UNKNOWN';
+      const fileName  = `${String(idx + 1).padStart(3, '0')}_${safeName}_${ts}.pdf`;
+      zip.file(fileName, pdfOut);
+    }
+
+    // ── ZIP 생성 & 다운로드 ────────────────────────────────────
+    const blob      = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+    const baseName  = S.pdfFile.name.replace(/\.pdf$/i, '');
+    const url       = URL.createObjectURL(blob);
+    const a         = document.createElement('a');
+    a.href          = url;
+    a.download      = `packing_list_split_${baseName}_${ts}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+
+    btn.textContent = '✅ 다운로드 완료';
+    btn.disabled    = false;
+
+  } catch (e) {
+    console.error(e);
+    btn.textContent = '❌ 오류 — 다시 시도';
+    btn.disabled    = false;
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+//  초기화 (새 파일 분석)
+// ═══════════════════════════════════════════════════════════════
+function resetApp() {
+  S.pdfFile  = null;
+  S.pdfBytes = null;
+  S.groups   = {};
+
+  // 업로드 화면 초기화
+  document.getElementById('upload-area').classList.remove('file-selected');
+  document.getElementById('upload-icon').textContent  = '📁';
+  document.getElementById('upload-text').innerHTML    =
+    '<strong>클릭하여 파일 선택</strong> 또는 여기에 드래그' +
+    '<br><span style="font-size:12px;color:#94a3b8;display:block;margin-top:4px">PDF 파일만 지원</span>';
+  document.getElementById('process-btn').disabled     = true;
+  document.getElementById('upload-err').classList.add('hidden');
+  document.getElementById('file-input').value         = '';
+
+  // 진행 화면 초기화
+  document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('progress-text').textContent = '0 / 0 페이지';
+  document.getElementById('log-box').innerHTML         = '';
+
+  showScreen('screen-upload');
+}
+
+
+// ─── 유틸 ─────────────────────────────────────────────────────
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+</script>
+</body>
+</html>
