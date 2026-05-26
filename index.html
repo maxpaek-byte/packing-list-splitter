@@ -341,11 +341,13 @@ async function pageToJpegBase64(page,dpi=200){
 }
 
 /**
- * Claude Haiku Vision API 호출  (v4 — 직접 탐색 방식)
+ * Claude Haiku Vision API 호출  (v5 — 직접 탐색 + 연속시트/숫자접두사 개선)
  *
  * 프롬프트 설계 원칙:
- *   - "라벨이 있나요?" 판단 먼저 요구 시 UNKNOWN 폭증 → 제거
+ *   - "라벨이 있나요?" 판단 먼저 요구 시 UNKNOWN 폭증 → 제거 (v3 실패 교훈)
  *   - "DELIVERY ADDRESS를 찾아서 읽어라" 직접 지시 → 정확도↑
+ *   - CHECK FIRST: 페이지 카운터(Page 2 of 3 등) 감지 → 연속시트 NO_LABEL 처리 (v5 신규)
+ *   - 숫자 접두사(003_, 010_ 등) 명시 지시 → 접두사 누락 방지 (v5 신규)
  *   - NO_LABEL은 라벨 박스가 진짜로 없는 경우만 (2페이지 첨부 시트 등)
  */
 async function callClaudeVision(imgBase64,pageNum){
@@ -360,7 +362,7 @@ async function callClaudeVision(imgBase64,pageNum){
       },
       body:JSON.stringify({
         model:'claude-haiku-4-5-20251001',
-        max_tokens:160,
+        max_tokens:200,
         messages:[{
           role:'user',
           content:[
@@ -368,23 +370,31 @@ async function callClaudeVision(imgBase64,pageNum){
             {type:'text',text:
               "This is a shipping packing list document.\n\n" +
 
-              "Find the 'DELIVERY ADDRESS' section — a labeled box usually in the upper-right area.\n\n" +
+              "CHECK FIRST — Is this a continuation sheet?\n" +
+              "Look anywhere on the page for a multi-page counter such as:\n" +
+              "  'Page 2 of 3', 'Sheet 2 of 2', '2/3', 'P.2', '2 of 2'\n" +
+              "If the visible page counter shows this is page 2 or higher (NOT the first page),\n" +
+              "this is a continuation sheet with no standalone delivery header → Reply: NO_LABEL\n\n" +
+
+              "Otherwise, find the 'DELIVERY ADDRESS' section — a labeled box usually in the upper-right area.\n\n" +
 
               "IF the 'DELIVERY ADDRESS' label/box IS visible:\n" +
               "  Extract the company name — the very first line of text immediately after the label.\n" +
-              "  Read ONLY that first line; stop there.\n" +
-              "  Do NOT read address, city, country, or postal code lines below.\n" +
+              "  The first line ends at the first line break. Read ONLY that one line; stop there.\n" +
+              "  Do NOT continue to address, city, country, or postal code lines below.\n" +
               "  Transcribe every character exactly as printed:\n" +
+              "    • If the name starts with digits and underscore (e.g., '003_', '010_', '052_'),\n" +
+              "      that prefix IS part of the company name — include it exactly. Do NOT omit it.\n" +
               "    • Underscore ( _ ) is NOT a space.\n" +
-              "      'ALPHA_TECH' (underscore) and 'ALPHA TECH' (space) are different — do not mix them.\n" +
+              "      '003_ALPHA_TECH' and '003_ALPHA TECH' are different — copy exactly as printed.\n" +
               "    • Zero ( 0 ) ≠ letter O.  H ≠ D.  J ≠ I or U.  GG ≠ G.  RN ≠ M.\n" +
               "    • Copy symbols verbatim: & ( ) - / , . as they appear.\n" +
+              "    • Preserve spaces before parentheses exactly as printed.\n" +
               "    • Do NOT add, remove, or alter any character.\n" +
               "  → If name is readable:   COMPANY: [exact company name]\n" +
               "  → If name is illegible:  COMPANY: UNKNOWN\n\n" +
 
-              "IF the 'DELIVERY ADDRESS' label/box does NOT appear anywhere on this page\n" +
-              "  (e.g. a 2nd or later sheet of a multi-page shipment that has no delivery header):\n" +
+              "IF the 'DELIVERY ADDRESS' label/box does NOT appear anywhere on this page:\n" +
               "  → Reply exactly:  NO_LABEL\n\n" +
 
               "Reply with EXACTLY ONE of the following — nothing else:\n" +
