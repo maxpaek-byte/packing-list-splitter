@@ -341,7 +341,7 @@ async function pageToJpegBase64(page, dpi=200) {
 }
 
 /**
- * Claude Haiku Vision API 호출  (v8)
+ * Claude Haiku Vision API 호출  (v9)
  *
  * 반환값:
  *   'NO_LABEL'     — DELIVERY ADDRESS 섹션이 이 페이지에 없음 (연속 시트)
@@ -364,7 +364,7 @@ async function callClaudeVision(imgBase64, pageNum) {
         },
         body: JSON.stringify({
           model:      'claude-haiku-4-5-20251001',
-          max_tokens: 128,
+          max_tokens: 200,
           messages: [{
             role: 'user',
             content: [
@@ -372,25 +372,30 @@ async function callClaudeVision(imgBase64, pageNum) {
               { type:'text',  text:
                 "This is a shipping packing list document.\n\n" +
 
-                "Find the 'DELIVERY ADDRESS' section — a labeled box usually in the upper-right area.\n\n" +
+                "STEP 1 — Does this page have a 'DELIVERY ADDRESS' box?\n" +
+                "  Look for a labeled box called 'DELIVERY ADDRESS', usually in the upper-right area.\n" +
+                "  Pages that lack this box are continuation sheets (they show 'Page X of N' at the top\n" +
+                "  with only a reference number row, no delivery address header at all).\n" +
+                "  If the box is ABSENT → reply exactly:  NO_LABEL\n\n" +
 
-                "IF the 'DELIVERY ADDRESS' label/box IS visible:\n" +
-                "  Extract the company name — the very first line of text immediately after the label.\n" +
-                "  Read ONLY that first line; stop there.\n" +
-                "  Do NOT read address, city, country, or postal code lines below.\n" +
-                "  Transcribe every character exactly as printed:\n" +
-                "    • Underscore ( _ ) is NOT a space.\n" +
-                "      'ALPHA TECH_DONGHAE' has a space before the underscore — copy exactly.\n" +
-                "    • Zero ( 0 ) ≠ letter O.  H ≠ D.  J ≠ I or U.  GG ≠ G.  RN ≠ M.\n" +
-                "    • Copy symbols verbatim: & ( ) - / , . as they appear.\n" +
-                "    • Do NOT add, remove, or alter any character.\n" +
+                "STEP 2 — If the box IS present, read the company name:\n" +
+                "  The company name is the FIRST typographic line inside the box.\n" +
+                "  A 'line' is defined by where the text WRAPS in the document — NOT by punctuation.\n" +
+                "  Periods and commas inside a company name do NOT end the line.\n" +
+                "  Example: 'AT&F GLOBAL CO.,LTD. (YANG SAN' is ONE single line.\n\n" +
+
+                "  Transcription rules — copy EXACTLY what is printed:\n" +
+                "    • Space ( ) and underscore ( _ ) are DIFFERENT — do not substitute one for the other.\n" +
+                "      'ALPHA TECH_DONGHAE' → underscore between TECH and DONGHAE.\n" +
+                "      'ALPHA TECH DONGHAE' → space between TECH and DONGHAE.\n" +
+                "      Read the actual character; do not guess from context.\n" +
+                "    • O (letter) ≠ Q ≠ 0 (zero).  H ≠ D.  B ≠ P.  RN ≠ M.  GG ≠ G.  I ≠ J.\n" +
+                "    • Look carefully at similar names: DONGGWANG ≠ TAEKWANG.\n" +
+                "    • Copy symbols verbatim: & ( ) _ - / , . as they appear.\n" +
+                "    • Do NOT correct spelling or typos — transcribe exactly as printed.\n" +
+                "    • Do NOT infer the name from nearby pages — read only THIS page.\n" +
                 "  → If name is readable:   COMPANY: [exact company name]\n" +
                 "  → If name is illegible:  COMPANY: UNKNOWN\n\n" +
-
-                "IF the 'DELIVERY ADDRESS' label/box does NOT appear anywhere on this page\n" +
-                "  (e.g. a 2nd or later sheet of a multi-page shipment with no delivery header):\n" +
-                "  → Reply exactly:  NO_LABEL\n" +
-                "  Note: Use NO_LABEL only when the box is truly absent — not when the name is hard to read.\n\n" +
 
                 "Reply with EXACTLY ONE of the following — nothing else:\n" +
                 "COMPANY: [exact company name]\n" +
