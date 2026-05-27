@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>📦 Packing List AI 분류기</title>
+  <title>📦 Packing List 자동 분류기</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -277,6 +277,7 @@ function setProgress(cur, total) {
 async function processPDF() {
   document.getElementById('log-box').innerHTML = '';
   S.groups = {};
+  S.knownCompanies = new Set();
   try {
     addLog('▶ PDF 로딩 중…', 'log-info');
     const pdfDoc     = await pdfjsLib.getDocument({ data: S.pdfBytes.slice() }).promise;
@@ -302,6 +303,16 @@ async function processPDF() {
         // lastCompany 는 갱신하지 않음
       } else {
         company = result;
+        // 퍼지 매칭: 이미 본 회사명과 글자 1~2개 차이면 자동 교정
+        if (company !== 'UNKNOWN') {
+          const matched = fuzzyMatch(company, S.knownCompanies);
+          if (matched !== company) {
+            addLog(`    → [퍼지 교정: ${company} → ${matched}]`, 'log-info');
+            company = matched;
+          } else {
+            S.knownCompanies.add(company);  // 신규 회사명 등록
+          }
+        }
         addLog(`    → ${company}`, company === 'UNKNOWN' ? 'log-warn' : 'log-ok');
         if (company !== 'UNKNOWN') lastCompany = company;
       }
@@ -341,7 +352,7 @@ async function pageToJpegBase64(page, dpi=200) {
 }
 
 /**
- * Claude Haiku Vision API 호출  (v10)
+ * Claude Haiku Vision API 호출  (v11)
  *
  * 반환값:
  *   'NO_LABEL'     — DELIVERY ADDRESS 섹션이 이 페이지에 없음 (연속 시트)
@@ -453,6 +464,41 @@ function normalizeCompany(name) {
   s = s.replace(/\s+/g, ' ');
   s = s.replace(/[.,;:]+$/, '');
   return s.trim() || 'UNKNOWN';
+}
+
+/**
+ * Levenshtein 편집 거리
+ */
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  if (m === 0) return n;
+  if (n === 0) return m;
+  const dp = [];
+  for (let i = 0; i <= m; i++) { dp[i] = [i]; }
+  for (let j = 0; j <= n; j++) { dp[0][j] = j; }
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++)
+      dp[i][j] = a[i-1] === b[j-1]
+        ? dp[i-1][j-1]
+        : 1 + Math.min(dp[i-1][j-1], dp[i-1][j], dp[i][j-1]);
+  return dp[m][n];
+}
+
+/**
+ * 이미 확인된 회사명과 퍼지 매칭
+ * - 거리 1: 항상 교정 (단일 문자 오류)
+ * - 거리 2: 문자열 길이가 10자 이상일 때만 교정 (단어가 긴 회사명)
+ */
+function fuzzyMatch(name, knownSet) {
+  if (!knownSet || knownSet.size === 0) return name;
+  let bestName = null, bestDist = Infinity;
+  for (const known of knownSet) {
+    const d = levenshtein(name, known);
+    if (d < bestDist) { bestDist = d; bestName = known; }
+  }
+  const maxDist = (name.length >= 10 && bestName && bestName.length >= 10) ? 2 : 1;
+  if (bestDist > 0 && bestDist <= maxDist) return bestName;
+  return name;
 }
 
 const delay = ms => new Promise(r => setTimeout(r, ms));
