@@ -11,42 +11,48 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
-      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      font-size: 16px;
+      background: linear-gradient(135deg, #f8fbff 0%, #eef7ff 100%);
       min-height: 100vh; display: flex; align-items: flex-start;
-      justify-content: center; padding: 32px 16px;
+      justify-content: center; padding: 36px 18px;
+      color: #0f172a;
     }
     .card {
-      background: #fff; border-radius: 20px;
-      box-shadow: 0 8px 40px rgba(0,100,180,.10);
-      width: 100%; max-width: 660px; padding: 36px 32px;
+      background: #ffffff; border-radius: 14px;
+      box-shadow: 0 12px 30px rgba(2,132,199,0.08), 0 2px 6px rgba(2,6,23,0.04);
+      width: 100%; max-width: 720px; padding: 40px 36px;
+      border: 1px solid rgba(3,105,161,0.04);
     }
     .screen { display: none; }
     .screen.active { display: block; }
-    h1 { font-size: 22px; font-weight: 700; color: #0369a1; margin-bottom: 4px; }
-    .subtitle { color: #64748b; font-size: 13px; margin-bottom: 24px; line-height: 1.6; }
-    label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
+    h1 { font-size: 24px; font-weight: 700; color: #0369a1; margin-bottom: 6px; }
+    .subtitle { color: #64748b; font-size: 14px; margin-bottom: 20px; line-height: 1.6; }
+    label { display: block; font-size: 14px; font-weight: 700; color: #334155; margin-bottom: 8px; }
     .input-wrap { position: relative; margin-bottom: 12px; }
     input[type=password], input[type=text] {
-      width: 100%; border: 2px solid #e2e8f0; border-radius: 10px;
-      padding: 12px 44px 12px 16px; font-size: 14px; color: #1e293b;
-      outline: none; transition: border-color .2s;
+      width: 100%; border: 1px solid #e6eef6; border-radius: 10px;
+      padding: 14px 46px 14px 16px; font-size: 15px; color: #0f172a;
+      outline: none; transition: border-color .18s, box-shadow .18s;
+      background: #fbfdff;
     }
     input:focus { border-color: #38bdf8; }
     .toggle-btn {
       position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
       background: none; border: none; cursor: pointer; font-size: 18px;
-      color: #94a3b8; user-select: none; line-height: 1;
+      color: #64748b; user-select: none; line-height: 1;
     }
     .security-note {
-      background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px;
-      padding: 10px 14px; font-size: 12px; color: #15803d;
-      line-height: 1.65; margin-bottom: 20px;
+      background: linear-gradient(180deg,#f7fffa,#f1fdf5);
+      border: 1px solid rgba(16,185,129,0.15); border-radius: 8px;
+      padding: 12px 14px; font-size: 13px; color: #166534;
+      line-height: 1.6; margin-bottom: 20px;
     }
     .btn {
-      display: block; width: 100%; background: #0284c7; color: #fff;
-      border: none; border-radius: 10px; padding: 13px 24px;
-      font-size: 15px; font-weight: 600; cursor: pointer;
-      transition: background .18s, transform .1s; text-align: center; margin-bottom: 0;
+      display: block; width: 100%; background: linear-gradient(180deg,#06a0d6,#0284c7);
+      color: #fff; border: none; border-radius: 10px; padding: 13px 24px;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      transition: transform .08s, box-shadow .12s; text-align: center; margin-bottom: 0;
+      box-shadow: 0 6px 18px rgba(2,132,199,0.12);
     }
     .btn:hover:not(:disabled) { background: #0369a1; }
     .btn:active:not(:disabled) { transform: scale(.99); }
@@ -59,9 +65,9 @@
     .error-msg { color: #dc2626; font-size: 12px; margin-bottom: 10px; }
     .hidden { display: none !important; }
     .upload-area {
-      border: 2px dashed #7dd3fc; border-radius: 14px; padding: 44px 24px;
-      text-align: center; cursor: pointer; transition: all .2s;
-      background: #f8fafc; margin-bottom: 20px; user-select: none;
+      border: 2px dashed #cfeffd; border-radius: 12px; padding: 44px 24px;
+      text-align: center; cursor: pointer; transition: all .18s;
+      background: linear-gradient(180deg,#fbfdff,#f7fbff); margin-bottom: 20px; user-select: none;
     }
     .upload-area:hover, .upload-area.dragover { border-color: #0284c7; background: #e0f2fe; }
     .upload-area.file-selected { border-color: #34d399; background: #ecfdf5; }
@@ -117,7 +123,7 @@
       고객사별 PDF로 분리 후 ZIP으로 다운로드합니다.<br>
       DELIVERY ADDRESS가 없는 연속 시트는 앞 페이지 고객사에 자동 포함됩니다.
     </p>
-    <label for="api-key-input">Anthropic API 키</label>
+    <label for="api-key-input">Anthropic API 키 입력 : API 키가 필요하신 분은 DX Manager에게 요청하십시오.</label>
     <div class="input-wrap">
       <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." autocomplete="off" />
       <button class="toggle-btn" id="toggle-key-btn" onclick="toggleKeyVisibility()" title="API 키 표시/숨기기">👁</button>
